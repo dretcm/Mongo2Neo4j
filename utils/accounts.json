@@ -1,0 +1,10 @@
+{
+"neo4j": {
+	"url":"neo4j+s://9060e0f9.databases.neo4j.io",
+	"user":"neo4j",
+	"password":"zkp_4HqTiDHBRovy4FVulhtIyVSCbdxPCeh_1FCPkc0"
+	},
+"mongodb":{
+	"url":"mongodb+srv://alexandercarpio:Mongodbaccount123@cluster0.azyrn1p.mongodb.net/?retryWrites=true&w=majority"
+	}
+}
