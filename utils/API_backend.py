@@ -71,4 +71,4 @@ def query_mongodb(query='sample_analytics.accounts.find({}).limit(5)'):
 # 2) set FLASK_APP=API_backend.py
 # 3) flask run
 if __name__ == "__main__":
-  app.run()
+  app.run(host='127.0.0.1', port=5000)
