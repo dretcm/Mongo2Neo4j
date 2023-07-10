@@ -36,9 +36,6 @@ def data_to_string(data):
       for j in data[i]:
         if type(data[i][j]) == list:
           data_to_string(data[i][j])
-          #for k in range(len(data[i][j])):
-            #for l in data[i][j][k]:
-              #data[i][j][k][l] = str(data[i][j][k][l])
         else:
           data[i][j] = str(data[i][j])
     return data

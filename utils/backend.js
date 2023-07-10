@@ -1,10 +1,10 @@
 let url = "", user='', password='';
 const host = 'http://127.0.0.1:5000/';
 const host_query = host + "mongo_query";
-
+var driver, session;
+const request = new XMLHttpRequest();
 
 document.addEventListener('DOMContentLoaded', () => {
-    const request = new XMLHttpRequest();
     request.open('GET', host + 'auth_neo4j');
     request.send();
 
@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         url = data["url"];
         user = data["user"];
         password = data["password"];
+        driver = neo4j.driver(url, neo4j.auth.basic(user, password));
+        session = driver.session();
     }
 
     document.getElementById('query').addEventListener('keydown', function(event) {
@@ -26,17 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function match(){
-    const driver = neo4j.driver(url, neo4j.auth.basic(user, password));
-    const session = driver.session();
-
-    const request = new XMLHttpRequest();
     const query = document.getElementById('query').value;
 
     request.open('POST', host_query);
+    const data = new FormData();
+    data.append('query', query);
+    request.send(data);
+
     request.onload = () => {
         const json = JSON.parse(request.responseText);
         const container = document.getElementById('graph-container');
-        const info = document.getElementById('inputs');
+        //const info = document.getElementById('inputs');
         container.innerHTML = "";
 
         if(json["success"]==true){
@@ -69,7 +71,7 @@ function match(){
                 }
 
                 if(genres)
-                    configs.mappings['$.genres'] = `${node_label[1]}{!${map_node[1]},*}`;
+                    configs.mappings['$.genres'] = 'Genre{!name,*}';//`${node_label[1]}{!${map_node[1]},*}`;
                 
                 if(companies)
                     configs.mappings['$.production_companies'] = 'Compani{!name,*}';
@@ -122,9 +124,6 @@ function match(){
                     console.error('Error al ejecutar la consulta:', error);
                     container.style.background = 'red';
                 })
-                .finally(() => {
-                    session.close();
-                });
             }
             else{
                 data_mongo.forEach(record => {
@@ -172,12 +171,8 @@ function match(){
         }
         else{
             container.style.background = 'red';
-            if (document.getElementById("info") != null)
-                info.removeChild(document.getElementById("info"));
+            //if (document.getElementById("info") != null)
+                //info.removeChild(document.getElementById("info"));
         }
     }
-
-    const data = new FormData();
-    data.append('query', query);
-    request.send(data);
 }
