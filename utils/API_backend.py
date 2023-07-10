@@ -46,23 +46,26 @@ def data_to_string(data):
 
 def query_mongodb(query='sample_analytics.accounts.find({}).limit(5)'):
   try:
-    query_split = query.split(".find(")
+    key_query = ".find(" if ".find(" in query else ".aggregate("
+    query_split = query.split(key_query)
+
     database, collection = query_split[0].split(".")
     database = client[database]
     collection = database[collection]
 
-    query = query_split[1].split(").limit")[0]
-    limit = int(query_split[1].split(".limit(")[1][:-1])
-
-    #results = list(collection.find(json.loads(query), {'_id':0}).limit(limit))
+    #query = query_split[1].split(").limit")[0]
+    query = "collection" + key_query + query_split[1]
+    #limit = int(query_split[1].split(".limit(")[1][:-1])
     #print(query)
-    results = list(collection.find(json.loads(query)).limit(limit))
-    #print(results)
 
+    #results = list(collection.find(json.loads(query)).limit(limit))
+    results = eval("list("+query+")")
+
+    #print(results)
     return data_to_string(results)
 
   except Exception as e:
-    print("\nError:\n", e)
+    print("\nError:\n", e, "\n")
     return False
 
 

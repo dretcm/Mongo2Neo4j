@@ -65,7 +65,7 @@ function match(){
                 }
                 else{
                     configs.mappings={};
-                    configs.mappings['$'] = `${node_label[0]}{!${map_node[0]}, @belongs_to_collection}`;
+                    configs.mappings['$'] = `${node_label[0]}{!${map_node[0]}, @belongs_to_collection,_id}`;
                 }
 
                 if(genres)
@@ -87,12 +87,17 @@ function match(){
                     //console.log(record);
                     record.nodes.forEach(item => {
                         //console.log(item);
+                        let properties = item.properties;
+                        data_mongo.forEach(record => {
+                            if("_id" in item.properties && item.properties._id == record["_id"])
+                                properties = record;
+                        });
                         const nodeObject = {
                             id: item.elementId,
                             //label: item.properties[map_node[item.labels[0]==node_label[0] ? 0 : 1]],
                             label: item.properties[map_node[map_node[0] in item.properties ? 0 : 1]],
                             title: item.labels[0],//node.start.labels[0]// Propiedad de nombre del nodo
-                            description : JSON.stringify(item.properties)
+                            description : properties
                         };
                         nodes.add(nodeObject);
                     });
@@ -106,8 +111,10 @@ function match(){
                             label: item.type
                         };
                         const aux = nodes.get(item.endNodeElementId)
-                        aux.title = item.type;
-                        nodes.update(aux);
+                        if(aux.title==undefined){
+                            aux.title = item.type;
+                            nodes.update(aux);
+                        }
                         edges.add(edgeObject);
                     });
                 })
@@ -126,7 +133,7 @@ function match(){
                         id: record['_id'],//con,
                         label: record['title'],
                         title: "Movies",
-                        description : JSON.stringify(record)
+                        description : record
                     };
                     nodes.add(nodeObject);
                 });
@@ -138,20 +145,28 @@ function match(){
             container.style.background = 'white';
 
             network.on("click", function(event) {
-            const nodeId = event.nodes[0]; // Obtiene el ID del nodo clicado
-            const node = nodes.get(nodeId); // Obtiene el objeto del nodo por su ID
-            const label = node.id; // Obtiene la etiqueta del nodo
+                const nodeId = event.nodes[0]; // Obtiene el ID del nodo clicado
+                const node = nodes.get(nodeId); // Obtiene el objeto del nodo por su ID
+                const label = node.id; // Obtiene la etiqueta del nodo
 
-            if (document.getElementById("info") != null)
-              info.removeChild(document.getElementById("info"));
+                /*
+                if (document.getElementById("info") != null)
+                  info.removeChild(document.getElementById("info"));
+                */
+                if(label!=undefined){
+                    const descrip = JSON.stringify(node.description, null, 2);
+                    /*
+                    const div_con = document.createElement("div");
+                    div_con.setAttribute("id", "info");
+                    const p = document.createElement("p");
+                    p.innerHTML = "ID: " + node.id +"<br> </pre> " + descrip +"</pre>";
+                    div_con.appendChild(p);
+                    info.appendChild(div_con);
+                    */
+                    const newTab = window.open("", "_blank"); // Abre una nueva pestaña en blanco
+                    newTab.document.write(`<pre>${descrip}</pre>`); // Escribe el contenido en la nueva pestaña
+                    newTab.document.close();
 
-            if(label!=undefined){
-                const div_con = document.createElement("div");
-                div_con.setAttribute("id", "info");
-                const p = document.createElement("p");
-                p.innerHTML = "ID: " + node.id +"<br> Data: " + node.description;
-                div_con.appendChild(p);
-                info.appendChild(div_con);
                 }
             });            
         }
