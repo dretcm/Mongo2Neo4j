@@ -47,7 +47,7 @@ function match(){
             const options = {};
             const focus = 'p_graph';
             const data_mongo = json["data"];
-            const node_label = ["Movie", "Genre"]
+            const node_label = ["Movie", "Genre"];
             const map_node = ["title","name"];
 
             let disperso = document.getElementById("disperso").checked;
@@ -63,15 +63,15 @@ function match(){
                 if(disperso){
                     configs.skipValidation = true;
                     configs.mappings={};
-                    configs.mappings['$'] = `${node_label[0]}{!${map_node[0]}, @belongs_to_collection,*}`;
+                    configs.mappings['$'] = 'Movie{!title, @belongs_to_collection,*}';   //`${node_label[0]}{!${map_node[0]}, @belongs_to_collection,*}`;
                 }
                 else{
                     configs.mappings={};
-                    configs.mappings['$'] = `${node_label[0]}{!${map_node[0]}, @belongs_to_collection,_id}`;
+                    configs.mappings['$'] = 'Movie{!title, @belongs_to_collection,_id}';   //`${node_label[0]}{!${map_node[0]}, @belongs_to_collection,_id}`;
                 }
 
                 if(genres)
-                    configs.mappings['$.genres'] = 'Genre{!name,*}';//`${node_label[1]}{!${map_node[1]},*}`;
+                    configs.mappings['$.genres'] = 'Genre{!name,*}';   //`${node_label[1]}{!${map_node[1]},*}`;
                 
                 if(companies)
                     configs.mappings['$.production_companies'] = 'Compani{!name,*}';
